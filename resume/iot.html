@@ -1,0 +1,788 @@
+<?php
+session_start();
+
+if(!isset($_SESSION["LoginID"]) || strlen($_SESSION["LoginID"])==0){
+	header("Location: ./index.php");
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>瑞助營造-示範工地　設備狀態監測</title>
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="expires" content="0">
+
+	<!-- jQuery 2.1.4 -->
+	<script src="/plugins/jQuery/jQuery-2.1.4.min.js" type="text/javascript"></script>
+
+	<!-- FontAwesome 5.0.6 -->
+	<link href="/plugins/fontawesome/css/fontawesome-all.css" rel="stylesheet" type="text/css" />
+
+	<!-- Theme style -->
+	<link href="/dist/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
+
+	<!-- Bootstrap 3.3.2 JS -->
+	<script src="/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+	<!-- webgl-utils -->
+	<script src="/plugins/webgl-utils/webgl-utils.js"></script>
+
+	<!-- gl-matrix -->
+	<script src="/plugins/gl-matrix/gl-matrix.js"></script>
+
+	<!-- xbim -->
+	<script src="/plugins/xbim/xbim-navigation-home.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-binary-reader.debug.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-model-geometry.debug.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-model-handle.debug.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-product-type.debug.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-shaders.debug.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-state.debug.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-triangulated-shape.debug.js"></script>
+	<script src="/plugins/xbim/viewer/xbim-viewer.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-attribute-dictionary.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-browser.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-cobie-utils.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-cobieuk-utils.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-visual-attribute.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-visual-entity.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-visual-model.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-visual-property.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-visual-templates.debug.js"></script>
+	<script src="/plugins/xbim/browser/xbim-visual-assignment-set.debug.js"></script>
+	<script src="/plugins/xbim/Plugins/NavigationCube/xbim-navigation-cube-shaders.debug.js"></script>
+	<script src="/plugins/xbim/Plugins/NavigationCube/xbim-navigation-cube.debug.js"></script>
+	<script src="/plugins/xbim/Plugins/NavigationCube/xbim-navigation-cube-textures.debug.js"></script>
+
+	<!-- jquery-loading -->
+	<script src="/plugins/jquery-loading/jquery.loading.js"  type="text/javascript"></script>
+	<link href="/plugins/jquery-loading/jquery.loading.css" rel="stylesheet" type="text/css" />
+
+	<!-- Fancybox -->
+	<script src="/plugins/fancybox/jquery.fancybox.js" type="text/javascript"></script>
+	<link href="/plugins/fancybox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+
+	<!-- jBox -->
+	<link href="/plugins/jBox/jBox.css" rel="stylesheet" type="text/css" />
+	<link href="/plugins/jBox/TooltipDark.css" rel="stylesheet" type="text/css" />
+	<script src="/plugins/jBox/jBox.min.js" type="text/javascript"></script>
+
+	<!-- firebase -->
+	<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+
+	<!-- d3.js -->
+	<script src="/plugins/d3js/d3.v3.min.js" charset="utf-8"></script>
+
+	<!-- c3.js -->
+	<script src="/plugins/c3js/c3.min.js" charset="utf-8"></script>
+	<link href="/plugins/c3js/c3.css" rel="stylesheet" type="text/css">
+
+	<!-- animate.css -->
+	<link href="/dist/css/animate.css" rel="stylesheet" type="text/css" />
+
+	<!-- LC-Switch -->
+	<script src="/plugins/LC-Switch/lc_switch.js" type="text/javascript"></script>
+	<link href="/plugins/LC-Switch/lc_switch.css" rel="stylesheet" type="text/css" />
+
+	<!-- moment -->
+	<script src="/plugins/daterangepicker/moment.min.js" type="text/javascript"></script>
+
+	<link href="CwbWebFlexable13.css" rel="stylesheet" type="text/css">
+
+	<!-- GoldenLayout -->
+<!-- 	<script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>
+	<link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
+	<link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" /> -->
+
+
+	<script src="https://webduino.io/components/webduino-js/dist/webduino-all.min.js"></script>
+	<script src="https://webduinoio.github.io/webduino-blockly/webduino-blockly.js"></script>
+
+	<!-- ResponsiveVoice.JS -->
+	<script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+
+	<style type="text/css">
+		*{font-family: '微軟正黑體', 'Source Sans Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;}
+
+		.vertical-align {
+			display: flex;
+			align-items: center;
+		}
+
+		.c3 svg {
+			font: 16px 微軟正黑體;
+			font-weight: bold;
+		}
+		.c3-line {
+			stroke-width: 3px;
+		}
+		.c3-legend-item {
+			font-size: 20px;
+		}
+		.c3-title{
+			font: 36px 微軟正黑體;
+			font-weight: bold;
+		}
+
+		.c3-region.regionYTemperature {
+			fill: #ff7f0e;
+		}
+		.c3-ygrid-line.gridYTemperature line {
+			stroke: #ff7f0e;
+		}
+		.c3-ygrid-line.gridYTemperature text {
+			fill: #ff7f0e;
+		}
+
+		.c3-region.regionYYHumidity {
+			fill: #2ca02c;
+		}
+		.c3-ygrid-line.gridYHumidity line {
+			stroke: #2ca02c;
+		}
+		.c3-ygrid-line.gridYHumidity text {
+			fill: #2ca02c;
+		}
+		/*.c3-axis-x, .c3-axis-y text {
+			font-size:15px;
+		}*/
+
+	</style>
+</head>
+
+<body class="skin-blue" style="background-color: #255083">
+	<div class="row" style="padding-top: 25px;">
+		<div class="col-lg-1 col-md-1"></div>
+		<div class="col-lg-10 col-md-10 text-center"><font style="font-size: 40px; color: #FFFFFF;"><strong>設備狀態監測</strong></font></div>
+		<div class="col-lg-1 col-md-1 text-center"><input onclick='responsiveVoice.speak("語音測試");' type='button' value='🔊 語音測試' /></div>
+	</div>
+
+	<audio id="audio" src="data/sound/alert.wav"></audio>
+
+	<div class="login-box" style="width: 96%; margin-top: 30px;">
+		<div class="row">
+
+
+
+			<div class="col-lg-3 col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border" id="KSLTCC_Header">
+						<h3 class="box-title"><strong>高雄長照工地</strong></h3>
+						<div class="box-tools pull-right">
+							<button id="KSLTCC_Minus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+							<button id="KSLTCC_Plus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+							<script type="text/javascript">
+								$(document).ready(function(e) {
+									$('#KSLTCC_Plus').hide();
+									// $('#KSLTCC_Minus').hide();
+									// $('#KSLTCC_Body').hide();
+									$('#KSLTCC_Header').on('click', function(){
+										if($('#KSLTCC_Body').is(':hidden')){
+											$('#KSLTCC_Plus').hide();
+											$('#KSLTCC_Minus').show();
+											$('#KSLTCC_Body').show(300);
+										}else{
+											$('#KSLTCC_Minus').hide();
+											$('#KSLTCC_Plus').show();
+											$('#KSLTCC_Body').hide(300);
+										}
+									});
+								});
+							</script>
+						</div>
+					</div>
+					<div id="KSLTCC_Body" class="box-body">
+						<div class="row">
+							<div class="col-md-12">
+<?php
+genScript("webduino", "KSLTCC_Temp_D1", "高雄長照", "噴霧降溫-感測"
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/噴霧降溫/DeviceStatus/Smart_10yeLvvd"
+, ""
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/噴霧降溫/資料");
+
+genScript("webduino", "KSLTCC_Temp_C1", "高雄長照", "噴霧降溫-控制1"
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/噴霧降溫/DeviceStatus/Smart_10dKE3DV"
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/噴霧降溫/設備開關"
+, "");
+
+genScript("webduino", "KSLTCC_HangingGate_B1F", "高雄長照", "地下一樓電梯井吊料口"
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/電梯井吊料口閘門-B1F/DeviceStatus/Smart_10VnDkPd"
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/電梯井吊料口閘門-B1F/設備開關"
+, "");
+
+genScript("webduino", "KSLTCC_HangingGate_B2F", "高雄長照", "地下二樓電梯井吊料口"
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/電梯井吊料口閘門-B2F/DeviceStatus/Smart_10dBGPWy"
+, "https://reiju-smartconstruction.firebaseio.com/高雄長照/電梯井吊料口閘門-B2F/設備開關"
+, "");
+?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<div class="col-lg-3 col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border" id="BanqiaoPS_Header">
+						<h3 class="box-title"><strong>板橋P/S工地</strong></h3>
+						<div class="box-tools pull-right">
+							<button id="BanqiaoPS_Minus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+							<button id="BanqiaoPS_Plus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+							<script type="text/javascript">
+								$(document).ready(function(e) {
+									$('#BanqiaoPS_Plus').hide();
+									// $('#BanqiaoPS_Minus').hide();
+									// $('#BanqiaoPS_Body').hide();
+									$('#BanqiaoPS_Header').on('click', function(){
+										if($('#BanqiaoPS_Body').is(':hidden')){
+											$('#BanqiaoPS_Plus').hide();
+											$('#BanqiaoPS_Minus').show();
+											$('#BanqiaoPS_Body').show(300);
+										}else{
+											$('#BanqiaoPS_Minus').hide();
+											$('#BanqiaoPS_Plus').show();
+											$('#BanqiaoPS_Body').hide(300);
+										}
+									});
+								});
+							</script>
+						</div>
+					</div>
+					<div id="BanqiaoPS_Body" class="box-body">
+						<div class="row">
+							<div class="col-md-12">
+<?php
+genScript("webduino", "BQPS_Temp_D1", "板橋PS", "噴霧降溫-感測"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/噴霧降溫/DeviceStatus/Smart_10VXGEmy"
+, ""
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/噴霧降溫/資料");
+
+genScript("webduino", "BQPS_Temp_C1", "板橋PS", "噴霧降溫-控制1"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/噴霧降溫/DeviceStatus/Smart_10QwRjrV"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/噴霧降溫/設備開關"
+, "");
+
+genScript("webduino", "BQPS_HangingGate_A_1F", "板橋PS", "A棟一樓電梯井吊料口"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/電梯井吊料口閘門-A棟1F/DeviceStatus/Smart_10yJA5Md"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/電梯井吊料口閘門-A棟1F/設備開關"
+, "");
+
+genScript("webduino", "BQPS_HangingGate_B_2F", "板橋PS", "B棟二樓電梯井吊料口"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/電梯井吊料口閘門-B棟2F/DeviceStatus/Smart_10V5avLV"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/電梯井吊料口閘門-B棟2F/設備開關"
+, "");
+
+genScript("webduino", "BQPS_HangingGate_B_1F", "板橋PS", "B棟一樓電梯井吊料口"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/電梯井吊料口閘門-B棟1F/DeviceStatus/Smart_10QpDLLQ"
+, "https://reiju-smartconstruction.firebaseio.com/板橋PS/電梯井吊料口閘門-B棟1F/設備開關"
+, "");
+?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<div class="col-lg-3 col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border" id="Demo1_Header">
+						<h3 class="box-title"><strong>示範工區1</strong></h3>
+						<div class="box-tools pull-right">
+							<button id="Demo1_Minus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+							<button id="Demo1_Plus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+							<script type="text/javascript">
+								$(document).ready(function(e) {
+									$('#Demo1_Plus').hide();
+									$('#Demo1_Header').on('click', function(){
+										if($('#Demo1_Body').is(':hidden')){
+											$('#Demo1_Plus').hide();
+											$('#Demo1_Minus').show();
+											$('#Demo1_Body').show(300);
+										}else{
+											$('#Demo1_Minus').hide();
+											$('#Demo1_Plus').show();
+											$('#Demo1_Body').hide(300);
+										}
+									});
+								});
+							</script>
+						</div>
+					</div>
+					<div id="Demo1_Body" class="box-body">
+						<div class="row">
+							<div class="col-md-12">
+<?php
+genScript("nano", "Demo1_LoRa1", "示範工區", "LoRa測試"
+, "https://reiju-smartconstruction.firebaseio.com/DemoSite1/LoRa/Device"
+, ""
+, "https://reiju-smartconstruction.firebaseio.com/DemoSite1/LoRa/Data");
+
+genScript("webduino", "Demo1_ConfinedSpace1", "示範工區", "局限空間"
+, "https://reiju-smartconstruction.firebaseio.com/示範工區1/局限空間1/DeviceStatus/Smart_10yMg2DQ"
+, "https://reiju-smartconstruction.firebaseio.com/示範工區1/局限空間1/抽風機開關"
+, "");
+
+genScript("webduino", "Demo1_HangingGate1", "示範工區", "電梯井吊料口"
+, "https://reiju-smartconstruction.firebaseio.com/示範工區1/局限空間1/DeviceStatus/Smart_10yMg2DQ"
+, "https://reiju-smartconstruction.firebaseio.com/示範工區1/吊料口1/警報器開關"
+, "");
+
+genScript("webduino", "Demo1_GateCounter", "示範工區", "閘門計數器"
+, "https://reiju-smartconstruction.firebaseio.com/示範工區1/閘門計數1/DeviceStatus/Smart_10nr8ep3"
+, ""
+, "");
+?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="col-lg-3 col-md-6">
+				<div class="box box-primary">
+					<div class="box-header with-border" id="Javan_Seat_Header">
+						<h3 class="box-title"><strong>智慧辦公室</strong></h3>
+						<div class="box-tools pull-right">
+							<button id="Javan_Seat_Minus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+							<button id="Javan_Seat_Plus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+							<script type="text/javascript">
+								$(document).ready(function(e) {
+									$('#Javan_Seat_Plus').hide();
+									$('#Javan_Seat_Header').on('click', function(){
+										if($('#Javan_Seat_Body').is(':hidden')){
+											$('#Javan_Seat_Plus').hide();
+											$('#Javan_Seat_Minus').show();
+											$('#Javan_Seat_Body').show(300);
+										}else{
+											$('#Javan_Seat_Minus').hide();
+											$('#Javan_Seat_Plus').show();
+											$('#Javan_Seat_Body').hide(300);
+										}
+									});
+								});
+							</script>
+						</div>
+					</div>
+					<div id="Javan_Seat_Body" class="box-body">
+						<div class="row">
+							<div class="col-md-12">
+<?php
+genScript("webduino", "Javan_Seat_DeviceCtrl", "智慧辦公室", "銘維坐位-控制"
+, "https://reiju-smartconstruction.firebaseio.com/JavanSeat/DeviceStatus/Smart_10DVARvQ"
+, "https://reiju-smartconstruction.firebaseio.com/JavanSeat/設備開關"
+, "");
+
+genScript("webduino", "Javan_Seat_DevicePIR", "智慧辦公室", "銘維坐位-桌底"
+, "https://reiju-smartconstruction.firebaseio.com/JavanSeat/DeviceStatus/Smart_10QpDgjQ"
+, ""
+, "");
+?>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="box box-primary">
+					<div class="box-header with-border" id="XU_Header">
+						<h3 class="box-title"><strong></strong></h3>
+						<div class="box-tools pull-right">
+							<button id="XU_Minus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+							<button id="XU_Plus" type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+							<script type="text/javascript">
+								$(document).ready(function(e) {
+									$('#XU_Minus').hide();
+									$('#XU_Body').hide();
+									$('#XU_Header').on('click', function(){
+										if($('#XU_Body').is(':hidden')){
+											$('#XU_Plus').hide();
+											$('#XU_Minus').show();
+											$('#XU_Body').show(300);
+										}else{
+											$('#XU_Minus').hide();
+											$('#XU_Plus').show();
+											$('#XU_Body').hide(300);
+										}
+									});
+								});
+							</script>
+						</div>
+					</div>
+					<div id="XU_Body" class="box-body">
+						<div class="row">
+							<div class="col-md-12">
+<?php
+genScript("webduino", "XU_1F_ColorLight", "幸福一號", "一樓-庭院霓虹燈"
+, "https://xu-iot.firebaseio.com/一樓/庭院/DeviceStatus/Smart_10ymRYnV"
+, "https://xu-iot.firebaseio.com/一樓/庭院/霓虹燈開關"
+, "https://xu-iot.firebaseio.com/一樓/庭院/資料");
+
+genScript("webduino", "XU_1F_LivingRoom", "幸福一號", "一樓-客廳"
+, "https://xu-iot.firebaseio.com/一樓/客廳/DeviceStatus/Smart_10LrwpB3"
+, ""
+, "https://xu-iot.firebaseio.com/一樓/客廳/資料");
+
+genScript("webduino", "XU_3F_Bedroom", "幸福一號", "三樓-臥室-小夜燈"
+, "https://xu-iot.firebaseio.com/三樓/臥室/DeviceStatus/Smart_10dkrkvQ"
+, "https://xu-iot.firebaseio.com/三樓/臥室/小夜燈開關"
+, "https://xu-iot.firebaseio.com/三樓/臥室/資料");
+
+// genScript("webduino", "XU_3F_Study", "幸福一號", "三樓-書房"
+// , "https://xu-iot.firebaseio.com/三樓/書房/DeviceStatus/Smart_10ymRYnV"
+// , "https://xu-iot.firebaseio.com/三樓/書房/抽風機開關"
+// , "https://xu-iot.firebaseio.com/三樓/書房/資料");
+?>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<?php
+
+function genScript($boardType, $divCode, $siteName, $deviceName, $firebaseDeviceString, $firebaseSwitchString, $firebaseDataString) {
+	if ($boardType=="webduino"){
+		if ($firebaseSwitchString!=""){
+			$switchString = "<div id='{$divCode}-Switch-Div'><input id='{$divCode}-Switch' type='checkbox' autocomplete='off' /></div>";
+		}
+
+$htmlString = <<<htmlString
+\n\n<!-- {$siteName} {$deviceName} ========================================================================================== start -->
+									<div id="{$divCode}" class="info-box bg-gray-active" style="animation-duration: 1.5s; animation-iteration-count: 6;">
+										<table width="100%" height="90">
+											<tbody>
+												<tr>
+													<td id="{$divCode}-Device" width="1%" style="padding-top:0px">
+														<i class="fa fa-question-circle fa-4x fa-fw text-black"></i>
+													</td>
+													<td width="98%" style="padding-top:0px; padding-right:10px; padding-bottom:0px; padding-left:10px">
+														<font size="4"><strong>{$deviceName}</strong></font>
+														<div class="progress"></div>
+														<font size="3" id="{$divCode}-Data">設備狀態未知…</font>
+													</td>
+													<td width="1%" style="padding:12px">
+														{$switchString}
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+htmlString;
+		echo $htmlString;
+
+		echo "\n	<script type='text/javascript'>";
+$jsString_Device = <<<JSDeviceString
+\n			var {$divCode}_Temperature=0;
+			var {$divCode}_Humidity=0;
+
+			// Device Status ---------------------------------------------------------------------------------------------------- start
+			var {$divCode}_Status="";
+			var {$divCode}_Status_Previous="";
+			var {$divCode}_Time="";
+			firebase_{$divCode}_Device = new Firebase("{$firebaseDeviceString}");
+			firebase_{$divCode}_Device.limitToLast(1).on("child_added", function(snapshot){
+				{$divCode}_Status = snapshot.val().Status;
+				{$divCode}_Time = snapshot.val().Time;
+			});
+			setTimeout(function(){
+				(function {$divCode}_Status_Check(){
+					var duration = moment.duration(moment().diff({$divCode}_Time));
+					var diffMinutes = duration.asMinutes();
+
+					if ({$divCode}_Status=="Online" && diffMinutes<3){
+						if ({$divCode}_Temperature!=0){
+							$('#{$divCode}-Data').html({$divCode}_Time.substring(11, 16)+"　"+{$divCode}_Temperature+"℃ / "+{$divCode}_Humidity+"%");
+						}else{
+							$('#{$divCode}-Data').html({$divCode}_Time.substring(5, 16));
+						}
+
+						$('#{$divCode}-Device').html("<i class='far fa-circle fa-4x fa-fw text-green'></i>");
+						if ({$divCode}_Status_Previous=="Offline"){
+							soundClear("{$siteName}，{$deviceName}，控制器連線恢復。");
+						}
+						{$divCode}_Status_Previous="Online";
+					}else{
+						if ({$divCode}_Status_Previous=="Online"){
+							soundAlert("{$siteName}，{$deviceName}，控制器連線異常。");
+							$('#{$divCode}-Data').html("控制器連線異常…");
+							$('#{$divCode}-Device').html("<i class='fa fa-exclamation-circle fa-4x fa-fw text-red'></i>");
+							$('#{$divCode}').removeClass().addClass('info-box bg-orange flash animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+								$(this).removeClass().addClass('info-box bg-gray-active');
+							});
+							{$divCode}_Status_Previous="Offline";
+						}
+					}
+					setTimeout({$divCode}_Status_Check, 1000*10);
+				})();
+			}, 1000*1);
+			// Device Status ---------------------------------------------------------------------------------------------------- end
+JSDeviceString;
+		echo $jsString_Device;
+
+		if ($firebaseSwitchString!=""){
+$jsString_Switch = <<<JSSwitchString
+\n\n		// Switch Status ---------------------------------------------------------------------------------------------------- start
+			firebase_{$divCode}_Switch = new Firebase("{$firebaseSwitchString}");
+			firebase_{$divCode}_Switch.limitToLast(1).on("child_added", function(snapshot){
+				setTimeout(function(){
+					if (snapshot.val().狀態=="開啟"){
+						$('#{$divCode}-Switch').lcs_on();
+					}else{
+						$('#{$divCode}-Switch').lcs_off();
+					}
+				}, 1000);
+			});
+
+			$('#{$divCode}-Switch-Div').on('click', function(){
+				var now_string = moment().format('YYYY-MM-DD HH:mm');
+				if ($('#{$divCode}-Switch').is(':checked')){
+					firebase_{$divCode}_Switch.set({});
+					firebase_{$divCode}_Switch.push({時間: now_string, 狀態: '關閉', 觸發來源: 'HMI'})
+				}else{
+					firebase_{$divCode}_Switch.set({});
+					firebase_{$divCode}_Switch.push({時間: now_string, 狀態: '開啟', 觸發來源: 'HMI'})
+				}
+			});
+			// Switch Status ---------------------------------------------------------------------------------------------------- end
+JSSwitchString;
+		echo $jsString_Switch;
+		}
+
+		if ($firebaseDataString!=""){
+$jsString_Data = <<<JSDataString
+\n\n		// Data ---------------------------------------------------------------------------------------------------- start
+			setTimeout(function(){
+				firebase_{$divCode}_Data = new Firebase("{$firebaseDataString}");
+				firebase_{$divCode}_Data.limitToLast(1).on("child_added", function(snapshot){
+					{$divCode}_Temperature = snapshot.val().溫度;
+					{$divCode}_Humidity = snapshot.val().濕度;
+
+					var duration = moment.duration(moment().diff(snapshot.val().時間));
+					var diffMinutes = duration.asMinutes();
+					if (diffMinutes<=20){
+						$('#{$divCode}-Data').html({$divCode}_Time.substring(11, 16)+"　"+{$divCode}_Temperature+"℃ / "+{$divCode}_Humidity+"%");
+						if(snapshot.val().溫度>=temperatureThreshold){
+							$('#{$divCode}-Alert').removeClass().addClass('bg-orange');
+						}else{
+							$('#{$divCode}-Alert').removeClass();
+						}
+					}else{
+						$('#{$divCode}-Alert').removeClass().addClass('bg-red');
+					}
+				});
+			}, 1000*5);
+			// Data ---------------------------------------------------------------------------------------------------- end
+JSDataString;
+		echo $jsString_Data;
+		}
+		echo "\n	</script>";
+		echo "\n<!-- {$siteName} {$deviceName}========================================================================================== end -->\n";
+
+
+
+
+	}else if ($boardType=="nano"){
+		if ($firebaseSwitchString!=""){
+			$switchString = "<div id='{$divCode}-Switch-Div'><input id='{$divCode}-Switch' type='checkbox' autocomplete='off' /></div>";
+		}
+
+$htmlString = <<<htmlString
+\n\n<!-- {$siteName} {$deviceName} ========================================================================================== start -->
+									<div id="{$divCode}" class="info-box bg-gray-active" style="animation-duration: 1.5s; animation-iteration-count: 6;">
+										<table width="100%" height="90">
+											<tbody>
+												<tr>
+													<td id="{$divCode}-Device" width="1%" style="padding-top:0px">
+														<i class="fa fa-question-circle fa-4x fa-fw text-black"></i>
+													</td>
+													<td width="98%" style="padding-top:0px; padding-right:10px; padding-bottom:0px; padding-left:10px">
+														<font size="4"><strong>{$deviceName}</strong></font>
+														<div class="progress"></div>
+														<font size="3" id="{$divCode}-Data">設備狀態未知…</font>
+													</td>
+													<td width="1%" style="padding:12px">
+														{$switchString}
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+htmlString;
+		echo $htmlString;
+
+		echo "\n	<script type='text/javascript'>";
+$jsString_Device = <<<JSDeviceString
+\n			var {$divCode}_Temperature=0;
+			var {$divCode}_Humidity=0;
+
+			// Device Status ---------------------------------------------------------------------------------------------------- start
+			var {$divCode}_Status_Previous="";
+			var {$divCode}_Time="";
+
+			var {$divCode}_Array={};
+
+			firebase_{$divCode}_Device = new Firebase("{$firebaseDeviceString}");
+
+			firebase_{$divCode}_Device.once("value", function(snapshot){
+				for (var key in snapshot.val()) {
+					{$divCode}_Array[key]=snapshot.val()[key];
+				}
+				firebase_{$divCode}_Device.on("value", function(snapshot1){
+					for (var key1 in snapshot1.val()) {
+						{$divCode}_Array[key1]=snapshot1.val()[key1];
+					}
+				});
+
+				(function {$divCode}_Status_Check(){
+					var duration = moment.duration(moment().diff({$divCode}_Array["Time"]));
+					var diffMinutes = duration.asMinutes();
+
+					if (diffMinutes<3){
+						if (typeof {$divCode}_Array["Temperature"] !== "undefined"){
+							$('#{$divCode}-Data').html({$divCode}_Array["Time"].substring(11, 16)+"　"+{$divCode}_Array["Temperature"]+"℃ / "+{$divCode}_Array["Humidity"]+"%");
+						}else{
+							$('#{$divCode}-Data').html({$divCode}_Array["Time"].substring(5, 16));
+						}
+
+						$('#{$divCode}-Device').html("<i class='far fa-circle fa-4x fa-fw text-green'></i>");
+						if ({$divCode}_Status_Previous=="Offline"){
+							soundClear("{$siteName}，{$deviceName}，控制器連線恢復。");
+						}
+						{$divCode}_Status_Previous="Online";
+					}else{
+						if ({$divCode}_Status_Previous=="Online"){
+							soundAlert("{$siteName}，{$deviceName}，控制器連線異常。");
+							$('#{$divCode}-Data').html("控制器連線異常…");
+							$('#{$divCode}-Device').html("<i class='fa fa-exclamation-circle fa-4x fa-fw text-red'></i>");
+							$('#{$divCode}').removeClass().addClass('info-box bg-orange flash animated').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+								$(this).removeClass().addClass('info-box bg-gray-active');
+							});
+							{$divCode}_Status_Previous="Offline";
+						}
+					}
+					setTimeout({$divCode}_Status_Check, 1000*10);
+				})();
+			});
+
+
+			// Device Status ---------------------------------------------------------------------------------------------------- end
+JSDeviceString;
+		echo $jsString_Device;
+
+		if ($firebaseSwitchString!=""){
+$jsString_Switch = <<<JSSwitchString
+\n\n		// Switch Status ---------------------------------------------------------------------------------------------------- start
+			firebase_{$divCode}_Switch = new Firebase("{$firebaseSwitchString}");
+			firebase_{$divCode}_Switch.limitToLast(1).on("child_added", function(snapshot){
+				setTimeout(function(){
+					if (snapshot.val().狀態=="開啟"){
+						$('#{$divCode}-Switch').lcs_on();
+					}else{
+						$('#{$divCode}-Switch').lcs_off();
+					}
+				}, 1000);
+			});
+
+			$('#{$divCode}-Switch-Div').on('click', function(){
+				var now_string = moment().format('YYYY-MM-DD HH:mm');
+				if ($('#{$divCode}-Switch').is(':checked')){
+					firebase_{$divCode}_Switch.set({});
+					firebase_{$divCode}_Switch.push({時間: now_string, 狀態: '關閉', 觸發來源: 'HMI'})
+				}else{
+					firebase_{$divCode}_Switch.set({});
+					firebase_{$divCode}_Switch.push({時間: now_string, 狀態: '開啟', 觸發來源: 'HMI'})
+				}
+			});
+			// Switch Status ---------------------------------------------------------------------------------------------------- end
+JSSwitchString;
+		echo $jsString_Switch;
+		}
+
+		if ($firebaseDataString!=""){
+$jsString_Data = <<<JSDataString
+\n\n		// Data ---------------------------------------------------------------------------------------------------- start
+			setTimeout(function(){
+				firebase_{$divCode}_Data = new Firebase("{$firebaseDataString}");
+				firebase_{$divCode}_Data.limitToLast(1).on("child_added", function(snapshot){
+					for (var key in snapshot.val()) {
+						{$divCode}_Array[key]=snapshot.val()[key];
+					}
+
+					var duration = moment.duration(moment().diff(snapshot.val()["Time"]));
+					var diffMinutes = duration.asMinutes();
+					if (diffMinutes<=20){
+						$('#{$divCode}-Data').html(snapshot.val()["Time"].substring(11, 16)+"　"+{$divCode}_Array["Temperature"]+"℃ / "+{$divCode}_Array["Humidity"]+"%");
+						if(snapshot.val().Temperature>=temperatureThreshold){
+							$('#{$divCode}-Alert').removeClass().addClass('bg-orange');
+						}else{
+							$('#{$divCode}-Alert').removeClass();
+						}
+					}else{
+						$('#{$divCode}-Alert').removeClass().addClass('bg-red');
+					}
+				});
+			}, 1000*5);
+			// Data ---------------------------------------------------------------------------------------------------- end
+JSDataString;
+		echo $jsString_Data;
+		}
+		echo "\n	</script>";
+		echo "\n<!-- {$siteName} {$deviceName}========================================================================================== end -->\n";
+	}
+
+}
+
+
+?>
+
+<script type="text/javascript">
+	var temperatureThreshold = 32;
+	var alertAudio = new Audio('data/sound/calling.mp3');
+	var clearAudio = new Audio('data/sound/clear.mp3');
+
+	responsiveVoice.setDefaultVoice("Chinese Taiwan Female");
+
+	function soundAlert(ttsString){
+		var date = new Date();
+		var hour = date.getHours();
+		var minute = date.getMinutes();
+
+		if ((hour>=8 && hour<=11) || ((hour>=14 && minute>30) && hour<=18)){
+			alertAudio.play();
+			setTimeout(function(){
+				responsiveVoice.speak(ttsString);
+			}, 2000);
+		}
+	}
+
+	function soundClear(ttsString){
+		clearAudio.play();
+
+		var date = new Date();
+		var hour = date.getHours();
+
+		if ((hour>=8 && hour<=11) || (hour>=14 && hour<=18)){
+			setTimeout(function(){
+				responsiveVoice.speak(ttsString);
+			}, 2000);
+		}
+	}
+
+	$(document).ready(function(e) {
+		$('input').lc_switch();
+	});
+</script>
+
+</body>
+</html>
